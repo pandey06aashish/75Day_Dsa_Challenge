@@ -1,92 +1,80 @@
-// Q1.Transform One String to Another using Minimum Number of Given Operation....
+// Q1.Search in Rotated Sorted Array....
 
 #include <iostream>
 #include <vector>
-#include <algorithm>
 
 using namespace std;
 
-int minOperations(string str1, string str2) {
-    int m = str1.length();
-    int n = str2.length();
+int searchInRotatedArray(const vector<int>& nums, int target) {
+    int left = 0;
+    int right = nums.size() - 1;
 
-    vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
 
-    for (int i = 0; i <= m; i++) {
-        for (int j = 0; j <= n; j++) {
-            if (i == 0)
-                dp[i][j] = j;
+        if (nums[mid] == target) {
+            return mid;
+        }
 
-            else if (j == 0)
-                dp[i][j] = i;
-
-            else if (str1[i - 1] == str2[j - 1])
-                dp[i][j] = dp[i - 1][j - 1];
-
-            else
-                dp[i][j] = 1 + min({ dp[i][j - 1], 
-                                    dp[i - 1][j],  
-                                    dp[i - 1][j - 1] 
-                                  });
+        if (nums[left] <= nums[mid]) {
+            if (nums[left] <= target && target < nums[mid]) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        } else {
+            if (nums[mid] < target && target <= nums[right]) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
         }
     }
 
-    return dp[m][n];
+    return -1;
 }
 
 int main() {
-    string str1 = "kitten";
-    string str2 = "sitting";
+    vector<int> nums = {4, 5, 6, 7, 0, 1, 2};
+    int target = 0;
 
-    cout << "Minimum number of operations: " << minOperations(str1, str2) << endl;
+    int result = searchInRotatedArray(nums, target);
+
+    if (result != -1) {
+        cout << "Target " << target << " found at index " << result << endl;
+    } else {
+        cout << "Target " << target << " not found in the array." << endl;
+    }
 
     return 0;
 }
 
-// Q2.Wildcard string matching...
+// Q2.Count Squares...
 
 #include <iostream>
-#include <vector>
 
 using namespace std;
 
-bool isMatch(string text, string pattern) {
-    int m = text.length();
-    int n = pattern.length();
+int countSquares(int n, int m) {
+    int count = 0;
 
-    vector<vector<bool>> dp(m + 1, vector<bool>(n + 1, false));
-
-    dp[0][0] = true;
-
-    for (int j = 1; j <= n; ++j) {
-        if (pattern[j - 1] == '*') {
-            dp[0][j] = dp[0][j - 1];
-        }
+    for (int i = 1; i <= min(n, m); ++i) {
+        count += (n - i + 1) * (m - i + 1);
     }
 
-    for (int i = 1; i <= m; ++i) {
-        for (int j = 1; j <= n; ++j) {
-            if (pattern[j - 1] == '?' || text[i - 1] == pattern[j - 1]) {
-                dp[i][j] = dp[i - 1][j - 1];
-            }
-            else if (pattern[j - 1] == '*') {
-                dp[i][j] = dp[i - 1][j] || dp[i][j - 1];
-            }
-        }
-    }
-
-    return dp[m][n];
+    return count;
 }
 
 int main() {
-    string text = "aa";
-    string pattern = "a*";
+    int n, m;
+    cout << "Enter the number of rows (n): ";
+    cin >> n;
+    cout << "Enter the number of columns (m): ";
+    cin >> m;
 
-    if (isMatch(text, pattern)) {
-        cout << "The text matches the pattern." << endl;
-    } else {
-        cout << "The text does not match the pattern." << endl;
-    }
+    int result = countSquares(n, m);
+
+    cout << "The number of squares in the grid is: " << result << endl;
 
     return 0;
 }
